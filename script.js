@@ -42,3 +42,31 @@ function renderStudySpots() {
 
 // Run on page load
 renderStudySpots();
+
+// Navigation between screens
+function showScreen(screenId) {
+    var screens = document.querySelectorAll(".screen");
+    for (var i = 0; i < screens.length; i++) {
+        screens[i].classList.remove("active");
+    }
+    document.getElementById(screenId + "-screen").classList.add("active");
+
+    // update active nav link
+    var links = document.querySelectorAll(".nav-link");
+    for (var i = 0; i < links.length; i++) {
+        links[i].classList.remove("active");
+        if (links[i].getAttribute("data-page") === screenId) {
+            links[i].classList.add("active");
+        }
+    }
+}
+
+// attach click handlers to nav links
+var navLinks = document.querySelectorAll(".nav-link");
+for (var i = 0; i < navLinks.length; i++) {
+    navLinks[i].addEventListener("click", function (e) {
+        e.preventDefault();
+        var page = this.getAttribute("data-page");
+        showScreen(page);
+    });
+}
