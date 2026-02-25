@@ -51,6 +51,56 @@
         <section id="reserve-screen" class="screen">
             <h1>Reserve Study Spot</h1>
             <p class="screen-subtitle">Complete your reservation details below</p>
+
+            <div class="reserve-card">
+                <h2>Selected Study Space</h2>
+                <div class="selected-space-info">
+                    <div>
+                        <p id="selected-name" class="space-name"></p>
+                        <p id="selected-details" class="space-details"></p>
+                        <p id="selected-capacity" class="space-details"></p>
+                    </div>
+                    <div>
+                        <p class="features-label">Features</p>
+                        <ul id="selected-features" class="features-list"></ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="reserve-card">
+                <h2>Reservation Details</h2>
+
+                <label class="field-label">Date</label>
+                <input type="date" id="reserve-date" class="date-input">
+
+                <label class="field-label">Time Slot</label>
+                <div id="time-slots" class="slot-grid">
+                    <button class="slot-btn" data-time="9:00 AM">9:00 AM</button>
+                    <button class="slot-btn" data-time="10:00 AM">10:00 AM</button>
+                    <button class="slot-btn" data-time="11:00 AM">11:00 AM</button>
+                    <button class="slot-btn" data-time="12:00 PM">12:00 PM</button>
+                    <button class="slot-btn" data-time="1:00 PM">1:00 PM</button>
+                    <button class="slot-btn" data-time="2:00 PM">2:00 PM</button>
+                    <button class="slot-btn" data-time="3:00 PM">3:00 PM</button>
+                    <button class="slot-btn" data-time="4:00 PM">4:00 PM</button>
+                    <button class="slot-btn" data-time="5:00 PM">5:00 PM</button>
+                    <button class="slot-btn" data-time="6:00 PM">6:00 PM</button>
+                    <button class="slot-btn" data-time="7:00 PM">7:00 PM</button>
+                    <button class="slot-btn" data-time="8:00 PM">8:00 PM</button>
+                </div>
+
+                <label class="field-label">Duration</label>
+                <div id="duration-btns" class="duration-grid">
+                    <button class="slot-btn" data-duration="1">1 hour</button>
+                    <button class="slot-btn" data-duration="2">2 hours</button>
+                    <button class="slot-btn" data-duration="3">3 hours</button>
+                </div>
+
+                <div class="reserve-actions">
+                    <button id="confirm-btn" class="confirm-btn">Confirm Reservation</button>
+                    <button id="cancel-btn" class="cancel-reserve-btn">Cancel</button>
+                </div>
+            </div>
         </section>
 
         <!-- My Reservations Screen -->
