@@ -28,6 +28,23 @@
         <section id="browse-screen" class="screen active">
             <h1>Browse Study Spots</h1>
             <p class="screen-subtitle">Find and reserve available study spaces across Laurier's Waterloo campus</p>
+
+            <div class="filters">
+                <select id="filter-building">
+                    <option value="all">All Buildings</option>
+                    <option value="Arts Building">Arts Building</option>
+                    <option value="Science Building">Science Building</option>
+                    <option value="Library">Library</option>
+                </select>
+                <select id="filter-capacity">
+                    <option value="all">All Capacities</option>
+                    <option value="1-2">1-2 people</option>
+                    <option value="3-6">3-6 people</option>
+                    <option value="7+">7+ people</option>
+                </select>
+            </div>
+
+            <div id="spots-grid" class="spots-grid"></div>
         </section>
 
         <!-- Reserve Study Spot Screen -->
