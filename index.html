@@ -115,6 +115,36 @@
             <h1>Busy Times Analytics</h1>
             <p class="screen-subtitle">Identify the best times to book study spaces based on historical usage patterns
             </p>
+
+            <div class="filters">
+                <select>
+                    <option>All Buildings</option>
+                    <option>Arts Building</option>
+                    <option>Science Building</option>
+                    <option>Library</option>
+                </select>
+                <select>
+                    <option>All Study Spaces</option>
+                    <option>Quiet Rooms</option>
+                    <option>Group Rooms</option>
+                    <option>Study Pods</option>
+                </select>
+                <select>
+                    <option>Weekdays</option>
+                    <option>Weekends</option>
+                    <option>All Days</option>
+                </select>
+            </div>
+
+            <div class="heatmap-container">
+                <div id="heatmap-grid" class="heatmap-grid"></div>
+                <div class="heatmap-legend">
+                    <span>Usage Level:</span>
+                    <span class="legend-item"><span class="legend-color low"></span> Low</span>
+                    <span class="legend-item"><span class="legend-color medium"></span> Medium</span>
+                    <span class="legend-item"><span class="legend-color high"></span> High</span>
+                </div>
+            </div>
         </section>
 
     </main>

@@ -248,3 +248,50 @@ function cancelReservation(id) {
     }
     renderReservations();
 }
+
+// Busy Times heatmap data
+// Each row is a day, each value is usage level for a 2-hour block (8AM-10PM)
+var usageData = {
+    "Mon": ["low", "medium", "medium", "high", "medium", "medium", "low", "low"],
+    "Tue": ["low", "high", "high", "high", "medium", "low", "medium", "low"],
+    "Wed": ["low", "medium", "high", "high", "high", "medium", "low", "low"],
+    "Thu": ["low", "high", "high", "high", "high", "medium", "medium", "low"],
+    "Fri": ["low", "medium", "high", "high", "medium", "medium", "low", "low"]
+};
+
+var timeHeaders = ["8AM", "10AM", "12PM", "2PM", "4PM", "6PM", "8PM", "10PM"];
+
+function renderHeatmap() {
+    var grid = document.getElementById("heatmap-grid");
+    grid.innerHTML = "";
+
+    // empty top-left corner
+    var corner = document.createElement("div");
+    grid.appendChild(corner);
+
+    // time headers
+    for (var i = 0; i < timeHeaders.length; i++) {
+        var header = document.createElement("div");
+        header.className = "heatmap-header";
+        header.textContent = timeHeaders[i];
+        grid.appendChild(header);
+    }
+
+    // rows for each day
+    var days = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+    for (var d = 0; d < days.length; d++) {
+        var dayLabel = document.createElement("div");
+        dayLabel.className = "heatmap-day";
+        dayLabel.textContent = days[d];
+        grid.appendChild(dayLabel);
+
+        var levels = usageData[days[d]];
+        for (var t = 0; t < levels.length; t++) {
+            var cell = document.createElement("div");
+            cell.className = "heatmap-cell " + levels[t];
+            grid.appendChild(cell);
+        }
+    }
+}
+
+renderHeatmap();
