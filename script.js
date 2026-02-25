@@ -7,7 +7,11 @@ var studySpots = [
     { id: 6, name: "Team Room F102", building: "Science Building", floor: 1, capacity: 6, status: "Reserved", features: ["Whiteboard", "Power outlets"] }
 ];
 
-var reservations = [];
+var reservations = [
+    { id: 1, spotId: 1, name: "Quiet Study Room A101", building: "Arts Building", floor: 1, date: "2025-01-26", startTime: "11:00 AM", endTime: "1:00 PM", status: "Confirmed" },
+    { id: 2, spotId: 2, name: "Group Study Room B205", building: "Science Building", floor: 2, date: "2025-01-28", startTime: "2:00 PM", endTime: "4:00 PM", status: "Pending" },
+    { id: 3, spotId: 3, name: "Silent Study Pod C12", building: "Library", floor: 3, date: "2025-02-02", startTime: "9:00 AM", endTime: "11:00 AM", status: "Confirmed" }
+];
 var selectedSpot = null;
 var selectedTime = null;
 var selectedDuration = null;
@@ -60,6 +64,11 @@ function showScreen(screenId) {
         if (links[i].getAttribute("data-page") === screenId) {
             links[i].classList.add("active");
         }
+    }
+
+    // re-render reservations when switching to that screen
+    if (screenId === "reservations") {
+        renderReservations();
     }
 }
 
@@ -191,3 +200,51 @@ document.getElementById("confirm-btn").addEventListener("click", function () {
 document.getElementById("cancel-btn").addEventListener("click", function () {
     showScreen("browse");
 });
+
+// Format date string for display
+function formatDate(dateStr) {
+    var parts = dateStr.split("-");
+    var date = new Date(parts[0], parts[1] - 1, parts[2]);
+    var months = ["January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"];
+    return months[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear();
+}
+
+// Render reservations list
+function renderReservations() {
+    var container = document.getElementById("reservations-list");
+    container.innerHTML = "";
+
+    for (var i = 0; i < reservations.length; i++) {
+        var res = reservations[i];
+        var card = document.createElement("div");
+        card.className = "reservation-card";
+
+        var statusClass = res.status === "Cancelled" ? "reservation-status status-cancelled" : "reservation-status";
+
+        card.innerHTML =
+            '<div class="reservation-info">' +
+            '<h3>' + res.name + '</h3>' +
+            '<p>' + res.building + ' • Floor ' + res.floor + '</p>' +
+            '<p>' + formatDate(res.date) + ' • ' + res.startTime + ' - ' + res.endTime + '</p>' +
+            '</div>' +
+            '<div class="reservation-right">' +
+            '<span class="' + statusClass + '">' + res.status + '</span>' +
+            '<button class="action-btn" onclick="console.log(\'Viewing reservation ' + res.id + '\')">View</button>' +
+            '<button class="action-btn" onclick="console.log(\'Editing reservation ' + res.id + '\')">Edit</button>' +
+            '<button class="action-btn" onclick="cancelReservation(' + res.id + ')">Cancel</button>' +
+            '</div>';
+
+        container.appendChild(card);
+    }
+}
+
+function cancelReservation(id) {
+    for (var i = 0; i < reservations.length; i++) {
+        if (reservations[i].id === id) {
+            reservations[i].status = "Cancelled";
+            break;
+        }
+    }
+    renderReservations();
+}

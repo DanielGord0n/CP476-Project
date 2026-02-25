@@ -306,3 +306,55 @@ body {
 .cancel-reserve-btn:hover {
     background: #f5f5f5;
 }
+
+/* My Reservations Screen */
+.reservation-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 20px 24px;
+    background: #fff;
+    margin-bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.reservation-info h3 {
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+.reservation-info p {
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 2px;
+}
+
+.reservation-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.reservation-status {
+    font-size: 13px;
+    color: #555;
+    margin-right: 8px;
+}
+
+.action-btn {
+    padding: 7px 16px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: #fff;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.action-btn:hover {
+    background: #f5f5f5;
+}
+
+.status-cancelled {
+    color: #c00;
+}
