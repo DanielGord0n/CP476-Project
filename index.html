@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WLUNest - Study Spot Reservations</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-brand">WLUNest</div>
+        <div class="nav-links">
+            <a href="#" class="nav-link active" data-page="browse">Browse Spots</a>
+            <a href="#" class="nav-link" data-page="reservations">My Reservations</a>
+            <a href="#" class="nav-link" data-page="analytics">Busy Times</a>
+        </div>
+        <button class="logout-btn">&#x27A1; Logout</button>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+
+        <!-- Browse Study Spots Screen -->
+        <section id="browse-screen" class="screen active">
+            <h1>Browse Study Spots</h1>
+            <p class="screen-subtitle">Find and reserve available study spaces across Laurier's Waterloo campus</p>
+        </section>
+
+        <!-- Reserve Study Spot Screen -->
+        <section id="reserve-screen" class="screen">
+            <h1>Reserve Study Spot</h1>
+            <p class="screen-subtitle">Complete your reservation details below</p>
+        </section>
+
+        <!-- My Reservations Screen -->
+        <section id="reservations-screen" class="screen">
+            <h1>My Reservations</h1>
+            <p class="screen-subtitle">View, edit, or cancel your upcoming study space bookings</p>
+        </section>
+
+        <!-- Busy Times Analytics Screen -->
+        <section id="analytics-screen" class="screen">
+            <h1>Busy Times Analytics</h1>
+            <p class="screen-subtitle">Identify the best times to book study spaces based on historical usage patterns
+            </p>
+        </section>
+
+    </main>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
