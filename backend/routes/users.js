@@ -8,4 +8,11 @@ router.get("/", (req, res) => {
   });
 });
 
+router.post("/", (req, res) => {
+  res.json({
+    message: "Create new user",
+    body: req.body
+  });
+});
+
 module.exports = router;
