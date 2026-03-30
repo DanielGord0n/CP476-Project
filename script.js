@@ -220,31 +220,59 @@ function getEndTime(startTime, hours) {
     return hour + ":00 " + endPeriod;
 }
 
-// Confirm reservation
+// convert date + "11:00 AM" string into ISO format like "2026-03-30T11:00:00"
+function toISODateTime(date, timeStr) {
+    var parts = timeStr.split(" ");
+    var timeParts = parts[0].split(":");
+    var hour = parseInt(timeParts[0]);
+    var period = parts[1];
+
+    if (period === "PM" && hour !== 12) hour += 12;
+    if (period === "AM" && hour === 12) hour = 0;
+
+    var hourStr = hour < 10 ? "0" + hour : "" + hour;
+    return date + "T" + hourStr + ":00:00";
+}
+
+// Confirm reservation - posts to backend
 document.getElementById("confirm-btn").addEventListener("click", function () {
     var date = document.getElementById("reserve-date").value;
 
     if (!selectedTime || !selectedDuration || !date) {
-        alert("Please fill in all fields.");
+        alert("Please select a date, time slot, and duration.");
         return;
     }
 
     var endTime = getEndTime(selectedTime, selectedDuration);
+    var startISO = toISODateTime(date, selectedTime);
+    var endISO = toISODateTime(date, endTime);
 
-    var reservation = {
-        id: reservations.length + 1,
-        spotId: selectedSpot.id,
-        name: selectedSpot.name,
-        building: selectedSpot.building,
-        floor: selectedSpot.floor,
-        date: date,
-        startTime: selectedTime,
-        endTime: endTime,
-        status: "Confirmed"
+    var body = {
+        user_id: 1,
+        spot_id: selectedSpot.id,
+        start_time: startISO,
+        end_time: endISO,
+        status: "confirmed"
     };
 
-    reservations.push(reservation);
-    showScreen("reservations");
+    apiPost("/reservations", body).then(function (res) {
+        // build a local copy for immediate display
+        var newRes = {
+            id: res.body ? res.body.reservation_id : reservations.length + 1,
+            spotId: selectedSpot.id,
+            name: selectedSpot.name,
+            building: selectedSpot.building,
+            floor: selectedSpot.floor,
+            date: date,
+            startTime: selectedTime,
+            endTime: endTime,
+            status: "Confirmed"
+        };
+        reservations.push(newRes);
+        showScreen("reservations");
+    }).catch(function () {
+        alert("Could not save reservation. Please try again.");
+    });
 });
 
 // Cancel goes back to browse
