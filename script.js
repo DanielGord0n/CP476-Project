@@ -1,3 +1,41 @@
+// API base URL - change this if backend is hosted somewhere else
+var API_URL = "http://localhost:3000/api";
+
+// simple fetch helpers
+function apiGet(endpoint) {
+    return fetch(API_URL + endpoint).then(function (res) {
+        return res.json();
+    });
+}
+
+function apiPost(endpoint, body) {
+    return fetch(API_URL + endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+    }).then(function (res) {
+        return res.json();
+    });
+}
+
+function apiPut(endpoint, body) {
+    return fetch(API_URL + endpoint, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+    }).then(function (res) {
+        return res.json();
+    });
+}
+
+function apiDelete(endpoint) {
+    return fetch(API_URL + endpoint, {
+        method: "DELETE"
+    }).then(function (res) {
+        return res.json();
+    });
+}
+
 var studySpots = [
     { id: 1, name: "Quiet Study Room A101", building: "Arts Building", floor: 1, capacity: 4, status: "Available", features: ["Quiet zone", "Whiteboard", "Power outlets"] },
     { id: 2, name: "Group Study Room B205", building: "Science Building", floor: 2, capacity: 8, status: "Reserved", features: ["Whiteboard", "TV screen", "Power outlets"] },
