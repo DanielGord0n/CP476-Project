@@ -117,9 +117,9 @@ function showScreen(screenId) {
         }
     }
 
-    // re-render reservations when switching to that screen
+    // load reservations fresh from the backend when switching to that screen
     if (screenId === "reservations") {
-        renderReservations();
+        loadReservations();
     }
 }
 
@@ -287,6 +287,31 @@ function formatDate(dateStr) {
     var months = ["January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"];
     return months[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear();
+}
+
+// fetch reservations from backend, fall back to local array if it fails
+function loadReservations() {
+    apiGet("/reservations").then(function (res) {
+        if (res.data && res.data.length > 0) {
+            // map backend field names to what renderReservations expects
+            reservations = res.data.map(function (r) {
+                return {
+                    id: r.reservation_id,
+                    spotId: r.spot_id,
+                    name: r.spot_name || "Study Spot",
+                    building: r.building_name || "",
+                    floor: r.floor || "",
+                    date: (r.start_time || "").split("T")[0],
+                    startTime: r.start_time || "",
+                    endTime: r.end_time || "",
+                    status: r.status || "Confirmed"
+                };
+            });
+        }
+        renderReservations();
+    }).catch(function () {
+        renderReservations();
+    });
 }
 
 // Render reservations list
