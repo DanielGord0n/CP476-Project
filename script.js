@@ -155,12 +155,13 @@ function openReserveScreen(spotId) {
     document.getElementById("selected-details").textContent = selectedSpot.building + " • Floor " + selectedSpot.floor;
     document.getElementById("selected-capacity").textContent = "Capacity: " + selectedSpot.capacity + (selectedSpot.capacity === 1 ? " person" : " people");
 
-    // show features
+    // show features if the spot has them
     var featuresList = document.getElementById("selected-features");
     featuresList.innerHTML = "";
-    for (var i = 0; i < selectedSpot.features.length; i++) {
+    var features = selectedSpot.features || [];
+    for (var i = 0; i < features.length; i++) {
         var li = document.createElement("li");
-        li.textContent = selectedSpot.features[i];
+        li.textContent = features[i];
         featuresList.appendChild(li);
     }
 
@@ -307,14 +308,16 @@ document.getElementById("confirm-btn").addEventListener("click", function () {
     });
 });
 
-// Cancel goes back to browse
+// Cancel goes back to browse and clears any edit state
 document.getElementById("cancel-btn").addEventListener("click", function () {
+    editingReservationId = null;
     showScreen("browse");
 });
 
-// Format date string for display
+// Format date string for display - handles both "2026-03-30" and "2026-03-30T11:00:00"
 function formatDate(dateStr) {
-    var parts = dateStr.split("-");
+    var datePart = dateStr.split("T")[0];
+    var parts = datePart.split("-");
     var date = new Date(parts[0], parts[1] - 1, parts[2]);
     var months = ["January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"];
