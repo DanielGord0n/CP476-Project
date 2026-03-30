@@ -51,6 +51,7 @@ var reservations = [];
 var selectedSpot = null;
 var selectedTime = null;
 var selectedDuration = null;
+var editingReservationId = null;
 
 // load spots from backend, fall back to hardcoded if it fails
 function loadStudySpots() {
@@ -178,6 +179,32 @@ function openReserveScreen(spotId) {
     showScreen("reserve");
 }
 
+// open the reserve form pre-filled for editing an existing reservation
+function openEditScreen(reservationId) {
+    var res = null;
+    for (var i = 0; i < reservations.length; i++) {
+        if (reservations[i].id === reservationId) {
+            res = reservations[i];
+            break;
+        }
+    }
+    if (!res) return;
+
+    editingReservationId = reservationId;
+
+    var spot = null;
+    for (var i = 0; i < studySpots.length; i++) {
+        if (studySpots[i].id === res.spotId) {
+            spot = studySpots[i];
+            break;
+        }
+    }
+    if (!spot) spot = { id: res.spotId, name: res.name, building: res.building, floor: res.floor, capacity: "", features: [] };
+
+    openReserveScreen(spot.id);
+    document.getElementById("reserve-date").value = res.date;
+}
+
 // Time slot selection
 var timeSlots = document.querySelectorAll("#time-slots .slot-btn");
 for (var i = 0; i < timeSlots.length; i++) {
@@ -256,7 +283,6 @@ document.getElementById("confirm-btn").addEventListener("click", function () {
     };
 
     apiPost("/reservations", body).then(function (res) {
-        // build a local copy for immediate display
         var newRes = {
             id: res.body ? res.body.reservation_id : reservations.length + 1,
             spotId: selectedSpot.id,
@@ -268,6 +294,12 @@ document.getElementById("confirm-btn").addEventListener("click", function () {
             endTime: endTime,
             status: "Confirmed"
         };
+
+        if (editingReservationId !== null) {
+            reservations = reservations.filter(function (r) { return r.id !== editingReservationId; });
+            editingReservationId = null;
+        }
+
         reservations.push(newRes);
         showScreen("reservations");
     }).catch(function () {
@@ -335,7 +367,7 @@ function renderReservations() {
             '<div class="reservation-right">' +
             '<span class="' + statusClass + '">' + res.status + '</span>' +
             '<button class="action-btn" onclick="console.log(\'Viewing reservation ' + res.id + '\')">View</button>' +
-            '<button class="action-btn" onclick="console.log(\'Editing reservation ' + res.id + '\')">Edit</button>' +
+            '<button class="action-btn" onclick="openEditScreen(' + res.id + ')">Edit</button>' +
             '<button class="action-btn" onclick="cancelReservation(' + res.id + ')">Cancel</button>' +
             '</div>';
 
