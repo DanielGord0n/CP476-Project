@@ -376,13 +376,14 @@ function renderReservations() {
 }
 
 function cancelReservation(id) {
-    for (var i = 0; i < reservations.length; i++) {
-        if (reservations[i].id === id) {
-            reservations[i].status = "Cancelled";
-            break;
-        }
-    }
-    renderReservations();
+    if (!confirm("Cancel this reservation?")) return;
+
+    apiDelete("/reservations/" + id).then(function () {
+        reservations = reservations.filter(function (r) { return r.id !== id; });
+        renderReservations();
+    }).catch(function () {
+        alert("Could not cancel the reservation. Please try again.");
+    });
 }
 
 // Busy Times heatmap data
