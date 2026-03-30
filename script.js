@@ -36,7 +36,8 @@ function apiDelete(endpoint) {
     });
 }
 
-var studySpots = [
+// fallback data in case backend isn't available
+var fallbackSpots = [
     { id: 1, name: "Quiet Study Room A101", building: "Arts Building", floor: 1, capacity: 4, status: "Available", features: ["Quiet zone", "Whiteboard", "Power outlets"] },
     { id: 2, name: "Group Study Room B205", building: "Science Building", floor: 2, capacity: 8, status: "Reserved", features: ["Whiteboard", "TV screen", "Power outlets"] },
     { id: 3, name: "Silent Study Pod C12", building: "Library", floor: 3, capacity: 2, status: "Pending", features: ["Quiet zone", "Power outlets"] },
@@ -45,29 +46,41 @@ var studySpots = [
     { id: 6, name: "Team Room F102", building: "Science Building", floor: 1, capacity: 6, status: "Reserved", features: ["Whiteboard", "Power outlets"] }
 ];
 
-var reservations = [
-    { id: 1, spotId: 1, name: "Quiet Study Room A101", building: "Arts Building", floor: 1, date: "2025-01-26", startTime: "11:00 AM", endTime: "1:00 PM", status: "Confirmed" },
-    { id: 2, spotId: 2, name: "Group Study Room B205", building: "Science Building", floor: 2, date: "2025-01-28", startTime: "2:00 PM", endTime: "4:00 PM", status: "Pending" },
-    { id: 3, spotId: 3, name: "Silent Study Pod C12", building: "Library", floor: 3, date: "2025-02-02", startTime: "9:00 AM", endTime: "11:00 AM", status: "Confirmed" }
-];
+var studySpots = [];
+var reservations = [];
 var selectedSpot = null;
 var selectedTime = null;
 var selectedDuration = null;
 
-// Render study spot cards into the browse screen
-function renderStudySpots() {
+// load spots from backend, fall back to hardcoded if it fails
+function loadStudySpots() {
+    apiGet("/spots").then(function (res) {
+        if (res.data && res.data.length > 0) {
+            studySpots = res.data;
+        } else {
+            studySpots = fallbackSpots;
+        }
+        renderStudySpots(studySpots);
+    }).catch(function () {
+        studySpots = fallbackSpots;
+        renderStudySpots(studySpots);
+    });
+}
+
+// render spot cards into the browse grid
+function renderStudySpots(spots) {
     var container = document.getElementById("spots-grid");
     container.innerHTML = "";
 
-    for (var i = 0; i < studySpots.length; i++) {
-        var spot = studySpots[i];
+    for (var i = 0; i < spots.length; i++) {
+        var spot = spots[i];
         var card = document.createElement("div");
         card.className = "spot-card";
 
-        var statusClass = spot.status.toLowerCase();
+        var statusClass = (spot.status || "available").toLowerCase();
 
         var buttonHTML = "";
-        if (spot.status === "Available") {
+        if (statusClass === "available") {
             buttonHTML = '<button class="reserve-btn" data-id="' + spot.id + '">Reserve</button>';
         } else {
             buttonHTML = '<button class="view-btn">View</button>';
@@ -75,10 +88,10 @@ function renderStudySpots() {
 
         card.innerHTML =
             '<h3>' + spot.name + '</h3>' +
-            '<p>' + spot.building + ' • Floor ' + spot.floor + '</p>' +
+            '<p>' + (spot.building || "") + ' • Floor ' + spot.floor + '</p>' +
             '<p>Capacity: ' + spot.capacity + (spot.capacity === 1 ? ' person' : ' people') + '</p>' +
             '<div class="card-footer">' +
-            '<span class="status ' + statusClass + '">' + spot.status + '</span>' +
+            '<span class="status ' + statusClass + '">' + (spot.status || "Available") + '</span>' +
             buttonHTML +
             '</div>';
 
@@ -86,7 +99,7 @@ function renderStudySpots() {
     }
 }
 
-renderStudySpots();
+loadStudySpots();
 
 // Navigation
 function showScreen(screenId) {
