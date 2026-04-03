@@ -1,7 +1,5 @@
-// API base URL - change this if backend is hosted somewhere else
 var API_URL = "http://localhost:3000/api";
 
-// simple fetch helpers
 function apiGet(endpoint) {
     return fetch(API_URL + endpoint).then(function (res) {
         return res.json();
@@ -36,7 +34,6 @@ function apiDelete(endpoint) {
     });
 }
 
-// fallback data in case backend isn't available
 var fallbackSpots = [
     { id: 1, name: "Quiet Study Room A101", building: "Arts Building", floor: 1, capacity: 4, status: "Available", features: ["Quiet zone", "Whiteboard", "Power outlets"] },
     { id: 2, name: "Group Study Room B205", building: "Science Building", floor: 2, capacity: 8, status: "Reserved", features: ["Whiteboard", "TV screen", "Power outlets"] },
@@ -53,11 +50,20 @@ var selectedTime = null;
 var selectedDuration = null;
 var editingReservationId = null;
 
-// load spots from backend, fall back to hardcoded if it fails
 function loadStudySpots() {
     apiGet("/spots").then(function (res) {
         if (res.data && res.data.length > 0) {
-            studySpots = res.data;
+            studySpots = res.data.map(function (s) {
+                return {
+                    id: s.spot_id, 
+                    name: s.name,
+                    building: "Building " + s.building_id, 
+                    floor: s.floor,
+                    capacity: s.capacity,
+                    status: "Available", 
+                    features: [] 
+                };
+            });
         } else {
             studySpots = fallbackSpots;
         }
@@ -68,7 +74,6 @@ function loadStudySpots() {
     });
 }
 
-// render spot cards into the browse grid
 function renderStudySpots(spots) {
     var container = document.getElementById("spots-grid");
     container.innerHTML = "";
@@ -102,7 +107,6 @@ function renderStudySpots(spots) {
 
 loadStudySpots();
 
-// Navigation
 function showScreen(screenId) {
     var screens = document.querySelectorAll(".screen");
     for (var i = 0; i < screens.length; i++) {
@@ -118,7 +122,6 @@ function showScreen(screenId) {
         }
     }
 
-    // load reservations fresh from the backend when switching to that screen
     if (screenId === "reservations") {
         loadReservations();
     }
@@ -133,7 +136,6 @@ for (var i = 0; i < navLinks.length; i++) {
     });
 }
 
-// Handle clicking Reserve on a spot card
 document.getElementById("spots-grid").addEventListener("click", function (e) {
     if (e.target.classList.contains("reserve-btn")) {
         var spotId = parseInt(e.target.getAttribute("data-id"));
@@ -155,7 +157,6 @@ function openReserveScreen(spotId) {
     document.getElementById("selected-details").textContent = selectedSpot.building + " • Floor " + selectedSpot.floor;
     document.getElementById("selected-capacity").textContent = "Capacity: " + selectedSpot.capacity + (selectedSpot.capacity === 1 ? " person" : " people");
 
-    // show features if the spot has them
     var featuresList = document.getElementById("selected-features");
     featuresList.innerHTML = "";
     var features = selectedSpot.features || [];
@@ -165,11 +166,9 @@ function openReserveScreen(spotId) {
         featuresList.appendChild(li);
     }
 
-    // set default date to today
     var today = new Date().toISOString().split("T")[0];
     document.getElementById("reserve-date").value = today;
 
-    // reset selections
     selectedTime = null;
     selectedDuration = null;
     var allSlots = document.querySelectorAll(".slot-btn");
@@ -180,7 +179,6 @@ function openReserveScreen(spotId) {
     showScreen("reserve");
 }
 
-// open the reserve form pre-filled for editing an existing reservation
 function openEditScreen(reservationId) {
     var res = null;
     for (var i = 0; i < reservations.length; i++) {
@@ -206,7 +204,6 @@ function openEditScreen(reservationId) {
     document.getElementById("reserve-date").value = res.date;
 }
 
-// Time slot selection
 var timeSlots = document.querySelectorAll("#time-slots .slot-btn");
 for (var i = 0; i < timeSlots.length; i++) {
     timeSlots[i].addEventListener("click", function () {
@@ -218,7 +215,6 @@ for (var i = 0; i < timeSlots.length; i++) {
     });
 }
 
-// Duration selection
 var durationBtns = document.querySelectorAll("#duration-btns .slot-btn");
 for (var i = 0; i < durationBtns.length; i++) {
     durationBtns[i].addEventListener("click", function () {
@@ -230,7 +226,6 @@ for (var i = 0; i < durationBtns.length; i++) {
     });
 }
 
-// Calculate end time from start time + duration
 function getEndTime(startTime, hours) {
     var parts = startTime.split(" ");
     var timeParts = parts[0].split(":");
@@ -248,7 +243,6 @@ function getEndTime(startTime, hours) {
     return hour + ":00 " + endPeriod;
 }
 
-// convert date + "11:00 AM" string into ISO format like "2026-03-30T11:00:00"
 function toISODateTime(date, timeStr) {
     var parts = timeStr.split(" ");
     var timeParts = parts[0].split(":");
@@ -262,7 +256,6 @@ function toISODateTime(date, timeStr) {
     return date + "T" + hourStr + ":00:00";
 }
 
-// Confirm reservation - posts to backend
 document.getElementById("confirm-btn").addEventListener("click", function () {
     var date = document.getElementById("reserve-date").value;
 
@@ -285,7 +278,7 @@ document.getElementById("confirm-btn").addEventListener("click", function () {
 
     apiPost("/reservations", body).then(function (res) {
         var newRes = {
-            id: res.body ? res.body.reservation_id : reservations.length + 1,
+            id: res.id || reservations.length + 1,
             spotId: selectedSpot.id,
             name: selectedSpot.name,
             building: selectedSpot.building,
@@ -303,18 +296,17 @@ document.getElementById("confirm-btn").addEventListener("click", function () {
 
         reservations.push(newRes);
         showScreen("reservations");
+        loadStudySpots();
     }).catch(function () {
         alert("Could not save reservation. Please try again.");
     });
 });
 
-// Cancel goes back to browse and clears any edit state
 document.getElementById("cancel-btn").addEventListener("click", function () {
     editingReservationId = null;
     showScreen("browse");
 });
 
-// Format date string for display - handles both "2026-03-30" and "2026-03-30T11:00:00"
 function formatDate(dateStr) {
     var datePart = dateStr.split("T")[0];
     var parts = datePart.split("-");
@@ -324,18 +316,20 @@ function formatDate(dateStr) {
     return months[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear();
 }
 
-// fetch reservations from backend, fall back to local array if it fails
 function loadReservations() {
     apiGet("/reservations").then(function (res) {
         if (res.data && res.data.length > 0) {
-            // map backend field names to what renderReservations expects
             reservations = res.data.map(function (r) {
+                var spot = studySpots.find(function (s) {
+                    return s.id === r.spot_id;
+                });
+
                 return {
                     id: r.reservation_id,
                     spotId: r.spot_id,
-                    name: r.spot_name || "Study Spot",
-                    building: r.building_name || "",
-                    floor: r.floor || "",
+                    name: spot ? spot.name : "Study Spot " + r.spot_id,
+                    building: spot ? spot.building : "",
+                    floor: spot ? spot.floor : "",
                     date: (r.start_time || "").split("T")[0],
                     startTime: r.start_time || "",
                     endTime: r.end_time || "",
@@ -349,7 +343,6 @@ function loadReservations() {
     });
 }
 
-// Render reservations list
 function renderReservations() {
     var container = document.getElementById("reservations-list");
     container.innerHTML = "";
@@ -389,8 +382,7 @@ function cancelReservation(id) {
     });
 }
 
-// Busy Times heatmap data
-// Each row is a day, each value is usage level for a 2-hour block (8AM-10PM)
+
 var usageData = {
     "Mon": ["low", "medium", "medium", "high", "medium", "medium", "low", "low"],
     "Tue": ["low", "high", "high", "high", "medium", "low", "medium", "low"],
@@ -405,11 +397,10 @@ function renderHeatmap() {
     var grid = document.getElementById("heatmap-grid");
     grid.innerHTML = "";
 
-    // empty top-left corner
+
     var corner = document.createElement("div");
     grid.appendChild(corner);
 
-    // time headers
     for (var i = 0; i < timeHeaders.length; i++) {
         var header = document.createElement("div");
         header.className = "heatmap-header";
@@ -417,7 +408,6 @@ function renderHeatmap() {
         grid.appendChild(header);
     }
 
-    // rows for each day
     var days = ["Mon", "Tue", "Wed", "Thu", "Fri"];
     for (var d = 0; d < days.length; d++) {
         var dayLabel = document.createElement("div");
